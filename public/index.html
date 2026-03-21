@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Blog — Articles & Idées</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0d0d0d;
+      --cream: #f5f0e8;
+      --paper: #faf7f2;
+      --accent: #c8442a;
+      --muted: #8a7f72;
+      --border: #e0d8cc;
+      --tag-bg: #ede9e2;
+      --success: #2a7f4f;
+      --card-bg: #ffffff;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+    header { border-bottom: 1px solid var(--border); background: var(--cream); padding: 0 2rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 0 1rem; border-bottom: 1px solid var(--border); }
+    .masthead { text-align: center; padding: 2rem 0 1.5rem; }
+    .masthead h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.5rem, 6vw, 5rem); font-weight: 900; letter-spacing: -1px; line-height: 1; }
+    .masthead .tagline { color: var(--muted); font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.5rem; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.82rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--accent); }
+
+    .toolbar { background: var(--cream); border-bottom: 2px solid var(--ink); padding: 0.8rem 2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .search-box { display: flex; flex: 1; min-width: 200px; max-width: 360px; border: 1px solid var(--border); background: #fff; overflow: hidden; }
+    .search-box input { border: none; outline: none; padding: 0.5rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; flex: 1; background: transparent; }
+    .search-box button { background: var(--ink); color: #fff; border: none; padding: 0.5rem 1rem; cursor: pointer; font-size: 0.8rem; }
+    .filter-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-group select { border: 1px solid var(--border); background: #fff; padding: 0.45rem 0.7rem; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; outline: none; }
+
+    .btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.1rem; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; }
+    .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-primary:hover { background: #a8351e; }
+    .btn-outline { background: transparent; color: var(--ink); border-color: var(--ink); }
+    .btn-outline:hover { background: var(--ink); color: #fff; }
+    .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+    .btn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+    .btn-danger:hover { background: #a93226; }
+
+    .main-container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--border); }
+    .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
+    .count-badge { background: var(--ink); color: #fff; font-size: 0.72rem; padding: 0.15rem 0.6rem; font-weight: 500; letter-spacing: 0.05em; }
+
+    .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5px; background: var(--border); }
+    .article-card { background: var(--card-bg); padding: 1.8rem; display: flex; flex-direction: column; gap: 0.8rem; transition: background 0.2s; animation: fadeIn 0.3s ease both; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .article-card:hover { background: var(--cream); }
+    .article-meta { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+    .article-cat { background: var(--ink); color: #fff; font-size: 0.68rem; padding: 0.15rem 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500; }
+    .article-date { font-size: 0.75rem; color: var(--muted); }
+    .article-title { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; line-height: 1.3; cursor: pointer; }
+    .article-title:hover { color: var(--accent); }
+    .article-author { font-size: 0.8rem; color: var(--muted); }
+    .article-author span { color: var(--ink); font-weight: 500; }
+    .article-excerpt { font-size: 0.88rem; line-height: 1.65; color: #444; flex: 1; }
+    .article-tags { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .tag { background: var(--tag-bg); font-size: 0.7rem; padding: 0.15rem 0.5rem; color: var(--muted); }
+    .article-actions { display: flex; gap: 0.5rem; padding-top: 0.8rem; border-top: 1px solid var(--border); }
+
+    .empty-state { text-align: center; padding: 5rem 2rem; color: var(--muted); background: var(--card-bg); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--ink); margin-bottom: 0.5rem; }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(2px); }
+    .modal { background: var(--paper); max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1.5px solid var(--ink); animation: modalIn 0.25s ease; }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.96) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    .modal-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--cream); }
+    .modal-header h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; }
+    .modal-close { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: var(--muted); line-height: 1; }
+    .modal-body { padding: 2rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; margin-bottom: 0.4rem; color: var(--muted); }
+    .form-group input, .form-group textarea { width: 100%; border: 1px solid var(--border); padding: 0.6rem 0.8rem; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: #fff; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--ink); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .modal-footer { padding: 1rem 2rem; border-top: 1px solid var(--border); display: flex; gap: 0.8rem; justify-content: flex-end; background: var(--cream); }
+
+    .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 200; display: flex; flex-direction: column; gap: 0.6rem; }
+    .toast { background: var(--ink); color: #fff; padding: 0.8rem 1.2rem; font-size: 0.85rem; max-width: 300px; border-left: 4px solid var(--accent); animation: toastIn 0.3s ease; }
+    .toast.success { border-left-color: var(--success); }
+    .toast.error { border-left-color: #c0392b; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    .loader { text-align: center; padding: 3rem; color: var(--muted); font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    .article-detail { background: var(--card-bg); padding: 3rem; border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+    .back-link { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; margin-bottom: 2rem; border: none; background: none; padding: 0; }
+    .back-link:hover { color: var(--accent); }
+    .detail-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.2; margin: 1rem 0; }
+    .detail-content { font-size: 1rem; line-height: 1.8; margin-top: 2rem; color: #333; }
+    .detail-actions { display: flex; gap: 0.8rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+
+    .api-badge { display: inline-flex; align-items: center; gap: 0.4rem; background: #1a202c; color: #68d391; font-size: 0.75rem; padding: 0.3rem 0.8rem; font-weight: 500; text-decoration: none; letter-spacing: 0.04em; }
+    .api-badge:hover { background: #2d3748; }
+
+    footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border); font-size: 0.78rem; color: var(--muted); margin-top: 3rem; background: var(--cream); }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .header-top { flex-direction: column; gap: 0.8rem; }
+      .toolbar { flex-direction: column; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <nav class="nav-links">
+      <a href="#" onclick="loadArticles(); return false;">Articles</a>
+      <a href="/api-docs" target="_blank">Swagger</a>
+      <a href="/api" target="_blank">JSON API</a>
+    </nav>
+    <div class="masthead">
+      <h1>Le Blog</h1>
+      <p class="tagline">Articles & Idées — TP INF222</p>
+    </div>
+    <a class="api-badge" href="/api-docs" target="_blank">⚡ API Docs</a>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Rechercher un article…" onkeydown="if(event.key==='Enter')doSearch()" />
+    <button onclick="doSearch()">Chercher</button>
+  </div>
+  <div class="filter-group">
+    <select id="filterCategorie" onchange="loadArticles()">
+      <option value="">Toutes catégories</option>
+    </select>
+    <select id="filterAuteur" onchange="loadArticles()">
+      <option value="">Tous auteurs</option>
+    </select>
+  </div>
+  <button class="btn btn-outline btn-sm" onclick="clearFilters()">✕ Réinitialiser</button>
+  <button class="btn btn-primary" onclick="openCreateModal()">+ Nouvel article</button>
+</div>
+
+<div class="main-container" id="mainContainer">
+  <div class="loader">Chargement des articles…</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Modal Créer/Éditer -->
+<div class="modal-overlay" id="articleModal" style="display:none;" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Nouvel article</h3>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="articleId" />
+      <div class="form-row">
+        <div class="form-group">
+          <label>Titre *</label>
+          <input type="text" id="fTitre" placeholder="Titre de l'article" />
+        </div>
+        <div class="form-group">
+          <label>Catégorie *</label>
+          <input type="text" id="fCategorie" placeholder="Ex: Technologie" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contenu *</label>
+        <textarea id="fContenu" placeholder="Rédigez votre article ici…"></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Auteur *</label>
+          <input type="text" id="fAuteur" placeholder="Votre nom" />
+        </div>
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" id="fDate" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tags (séparés par des virgules)</label>
+        <input type="text" id="fTags" placeholder="Ex: javascript, node, api" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveArticle()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Blog API &copy; 2026 &mdash;
+  <a href="/api-docs" target="_blank">Documentation Swagger</a> &mdash;
+  <a href="/api" target="_blank">Endpoint /api</a>
+</footer>
+
+<script>
+  const API_BASE = '/api/articles';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+    loadArticles();
+  });
+
+  async function loadArticles() {
+    const categorie = document.getElementById('filterCategorie').value;
+    const auteur = document.getElementById('filterAuteur').value;
+    let url = API_BASE + '?';
+    if (categorie) url += 'categorie=' + encodeURIComponent(categorie) + '&';
+    if (auteur) url += 'auteur=' + encodeURIComponent(auteur) + '&';
+    setLoading(true);
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const articles = data.articles || [];
+      renderList(articles);
+      populateFilters(articles);
+    } catch (e) {
+      showError('Impossible de contacter le serveur. Lancez d\'abord : <code>npm start</code>');
+    }
+  }
+
+  function populateFilters(articles) {
+    const cats = [...new Set(articles.map(a => a.categorie))].sort();
+    const auteurs = [...new Set(articles.map(a => a.auteur))].sort();
+    const catSel = document.getElementById('filterCategorie');
+    const curCat = catSel.value;
+    catSel.innerHTML = '<option value="">Toutes catégories</option>' +
+      cats.map(c => '<option value="' + esc(c) + '"' + (c===curCat?' selected':'') + '>' + esc(c) + '</option>').join('');
+    const autSel = document.getElementById('filterAuteur');
+    const curAut = autSel.value;
+    autSel.innerHTML = '<option value="">Tous auteurs</option>' +
+      auteurs.map(a => '<option value="' + esc(a) + '"' + (a===curAut?' selected':'') + '>' + esc(a) + '</option>').join('');
+  }
+
+  function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('filterCategorie').value = '';
+    document.getElementById('filterAuteur').value = '';
+    loadArticles();
+  }
+
+  async function doSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (!q) { loadArticles(); return; }
+    setLoading(true);
+    try {
+      const res = await fetch(API_BASE + '/search?query=' + encodeURIComponent(q));
+      const data = await res.json();
+      renderList(data.articles || [], 'Résultats pour "' + esc(q) + '"');
+    } catch (e) { toast('Erreur lors de la recherche', 'error'); }
+  }
+
+  function renderList(articles, title) {
+    title = title || 'Articles';
+    const container = document.getElementById('mainContainer');
+    let html = '<div class="section-header"><h2>' + title + '</h2><span class="count-badge">' + articles.length + ' article' + (articles.length !== 1 ? 's' : '') + '</span></div>';
+    if (!articles.length) {
+      html += '<div class="empty-state"><div class="icon">📭</div><h3>Aucun article trouvé</h3><p>Essayez d\'autres filtres ou créez le premier article.</p></div>';
+    } else {
+      html += '<div class="articles-grid">';
+      articles.forEach(function(a, i) {
+        const tags = Array.isArray(a.tags) ? a.tags : [];
+        const excerpt = a.contenu.length > 140 ? a.contenu.slice(0, 140) + '…' : a.contenu;
+        html += '<div class="article-card" style="animation-delay:' + (i * 0.04) + 's">' +
+          '<div class="article-meta"><span class="article-cat">' + esc(a.categorie) + '</span><span class="article-date">' + fmtDate(a.date) + '</span></div>' +
+          '<div class="article-title" onclick="showDetail(\'' + a.id + '\')">' + esc(a.titre) + '</div>' +
+          '<div class="article-author">Par <span>' + esc(a.auteur) + '</span></div>' +
+          '<div class="article-excerpt">' + esc(excerpt) + '</div>' +
+          (tags.length ? '<div class="article-tags">' + tags.map(function(t){ return '<span class="tag">#' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+          '<div class="article-actions">' +
+          '<button class="btn btn-outline btn-sm" onclick="showDetail(\'' + a.id + '\')">Lire</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="openEditModal(\'' + a.id + '\')">✎ Éditer</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="delArticle(\'' + a.id + '\',\'' + esc(a.titre).replace(/'/g,"\\'") + '\')">🗑</button>' +
+          '</div></div>';
+      });
+      html += '</div>';
+    }
+    container.innerHTML = html;
+  }
+
+  async function showDetail(id) {
+    setLoading(true);
+    try {
+      const res = await fetch(API_BASE + '/' + id);
+      if (!res.ok) { toast('Article introuvable', 'error'); loadArticles(); return; }
+      const a = await res.json();
+      const tags = Array.isArray(a.tags) ? a.tags : [];
+      document.getElementById('mainContainer').innerHTML =
+        '<div class="article-detail">' +
+        '<button class="back-link" onclick="loadArticles()">← Retour aux articles</button>' +
+        '<div class="article-meta"><span class="article-cat">' + esc(a.categorie) + '</span><span class="article-date">' + fmtDate(a.date) + '</span></div>' +
+        '<h1 class="detail-title">' + esc(a.titre) + '</h1>' +
+        '<div class="article-author" style="font-size:0.9rem">Par <span>' + esc(a.auteur) + '</span></div>' +
+        (tags.length ? '<div class="article-tags" style="margin-top:0.8rem">' + tags.map(function(t){ return '<span class="tag">#' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+        '<div class="detail-content">' + esc(a.contenu).replace(/\n/g,'<br>') + '</div>' +
+        '<div class="detail-actions">' +
+        '<button class="btn btn-outline" onclick="openEditModal(\'' + a.id + '\')">✎ Modifier</button>' +
+        '<button class="btn btn-danger" onclick="delArticle(\'' + a.id + '\',\'' + esc(a.titre).replace(/'/g,"\\'") + '\')">🗑 Supprimer</button>' +
+        '</div></div>';
+    } catch(e) { toast('Erreur chargement', 'error'); loadArticles(); }
+  }
+
+  function openCreateModal() {
+    document.getElementById('modalTitle').textContent = 'Nouvel article';
+    document.getElementById('articleId').value = '';
+    ['fTitre','fContenu','fAuteur','fCategorie','fTags'].forEach(function(id){ document.getElementById(id).value = ''; });
+    document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('articleModal').style.display = 'flex';
+  }
+
+  async function openEditModal(id) {
+    try {
+      const res = await fetch(API_BASE + '/' + id);
+      if (!res.ok) { toast('Article introuvable', 'error'); return; }
+      const a = await res.json();
+      document.getElementById('modalTitle').textContent = "Modifier l'article";
+      document.getElementById('articleId').value = a.id;
+      document.getElementById('fTitre').value = a.titre;
+      document.getElementById('fContenu').value = a.contenu;
+      document.getElementById('fAuteur').value = a.auteur;
+      document.getElementById('fDate').value = a.date;
+      document.getElementById('fCategorie').value = a.categorie;
+      document.getElementById('fTags').value = Array.isArray(a.tags) ? a.tags.join(', ') : '';
+      document.getElementById('articleModal').style.display = 'flex';
+    } catch(e) { toast('Erreur chargement', 'error'); }
+  }
+
+  function closeModal() { document.getElementById('articleModal').style.display = 'none'; }
+
+  async function saveArticle() {
+    const id = document.getElementById('articleId').value;
+    const titre = document.getElementById('fTitre').value.trim();
+    const contenu = document.getElementById('fContenu').value.trim();
+    const auteur = document.getElementById('fAuteur').value.trim();
+    const date = document.getElementById('fDate').value;
+    const categorie = document.getElementById('fCategorie').value.trim();
+    const tagsRaw = document.getElementById('fTags').value;
+    const tags = tagsRaw ? tagsRaw.split(',').map(function(t){ return t.trim(); }).filter(Boolean) : [];
+    if (!titre || !contenu || !auteur || !date || !categorie) {
+      toast('Veuillez remplir tous les champs obligatoires (*)', 'error'); return;
+    }
+    try {
+      const res = await fetch(id ? API_BASE + '/' + id : API_BASE, {
+        method: id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titre, contenu, auteur, date, categorie, tags })
+      });
+      const data = await res.json();
+      if (!res.ok) { toast(data.error || 'Erreur', 'error'); return; }
+      closeModal();
+      toast(id ? 'Article modifié !' : 'Article créé avec succès !', 'success');
+      loadArticles();
+    } catch(e) { toast('Erreur de connexion', 'error'); }
+  }
+
+  async function delArticle(id, titre) {
+    if (!confirm('Supprimer "' + titre + '" ?\nCette action est irréversible.')) return;
+    try {
+      const res = await fetch(API_BASE + '/' + id, { method: 'DELETE' });
+      if (!res.ok) { toast('Erreur suppression', 'error'); return; }
+      toast('Article supprimé', 'success');
+      loadArticles();
+    } catch(e) { toast('Erreur connexion', 'error'); }
+  }
+
+  function setLoading(s) {
+    if (s) document.getElementById('mainContainer').innerHTML = '<div class="loader">Chargement…</div>';
+  }
+  function showError(msg) {
+    document.getElementById('mainContainer').innerHTML =
+      '<div class="empty-state"><div class="icon">⚠️</div><h3>Connexion impossible</h3><p>' + msg + '</p><br><button class="btn btn-primary" onclick="loadArticles()">Réessayer</button></div>';
+  }
+  function toast(msg, type) {
+    const c = document.getElementById('toastContainer');
+    const el = document.createElement('div');
+    el.className = 'toast' + (type ? ' ' + type : '');
+    el.textContent = msg;
+    c.appendChild(el);
+    setTimeout(function(){ el.remove(); }, 3500);
+  }
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtDate(s) {
+    if (!s) return '';
+    try { return new Date(s + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }); }
+    catch(e) { return s; }
+  }
+</script>
+</body>
+</html>
