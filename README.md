@@ -13,7 +13,7 @@ cd blog-api
 npm install
 npm start
 ```
-
+en local 
 | URL | Description |
 |-----|-------------|
 | http://localhost:3000 | Interface web du blog |
@@ -21,6 +21,16 @@ npm start
 | http://localhost:3000/api | Infos JSON |
 
 ---
+en ligne 
+
+| URL | Description |
+|-----|-------------|
+| https://taf1-inf222.onrender.com| Interface web du blog |
+| https://taf1-inf222.onrender.com/api-docs/| Documentation Swagger 
+|https://taf1-inf222.onrender.com/api | Infos JSON |
+
+---
+
 
 ## Endpoints
 
